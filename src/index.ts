@@ -9,7 +9,7 @@
  * 
  */
 import commander from 'commander';
-import { log } from './utils/utils';
+import run from './wxapp';
 
 commander
   .version('0.0.1')
@@ -17,7 +17,4 @@ commander
   .option('-s, --silent', 'silent log')
   .parse(process.argv);
 
-if(commander.silent) log.silent();
-log.debug('helloworld');
-log.warn('helloworld');
-log.error('helloworld');
+run();

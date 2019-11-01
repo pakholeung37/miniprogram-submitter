@@ -27,5 +27,32 @@ exports.log = {
         this._silent = value;
     }
 };
-exports.readFileAsync = util_1.promisify(fs_1.default.readFile);
-exports.writeFileAsync = util_1.promisify(fs_1.default.writeFile);
+const _readFileAsync = util_1.promisify(fs_1.default.readFile);
+const _writeFileAsync = util_1.promisify(fs_1.default.writeFile);
+class RollBackSystem {
+    constructor() {
+        this.fileSet = new Set();
+    }
+    readFileAsync(...args) {
+        return _readFileAsync(...args)
+            .then(data => {
+            this.fileSet.add({ path: args[0], orginalData: data });
+            return data;
+        });
+    }
+    writeFileAsync(...args) {
+        this.fileSet.forEach(_ => (_.path = args[0]) && (_.hadOverride = true));
+        return _writeFileAsync(...args);
+    }
+    rollback() {
+        const functionArray = [];
+        this.fileSet.forEach(file => {
+            if (file.hadOverride) {
+                functionArray.push(_writeFileAsync(file.path, file.orginalData));
+            }
+        });
+        return Promise.all(functionArray);
+    }
+}
+exports.singleRollBackSystem = new RollBackSystem();
+//# sourceMappingURL=utils.js.map

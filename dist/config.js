@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
+const merge_1 = __importDefault(require("lodash/merge"));
 const baseWxappExt = {
     "extEnable": true,
     "extAppid": "wxa8f78f6cd7ae5462",
@@ -17,57 +18,45 @@ const baseWxappExt = {
         "wxappDomainUrl": "https://wxapp.dev.faisco.com.cn/"
     }
 };
-/**
- * 本地轻站
- */
-const wxappExt__DEV = Object.assign({}, baseWxappExt, {
+const wxappExt__DEV = merge_1.default({}, baseWxappExt, {
     "extAppid": "wxa8f78f6cd7ae5462",
     "ext": {
+        "isOem": false,
         "wxappAid": 9865628,
         "wxappId": 101,
-        "wxappDomainUrl": "https://wxapp.dev.faisco.com.cn/"
+        "wxappDomainUrl": "https://wxapp.dev.faisco.com.cn/",
+        "wxappDomain": "https://wxapp.dev.faisco.com.cn/wxAppConnectionV3.jsp"
     }
 });
-/**
- * 本地轻应用
- */
-const wxappExt__OEMDEV = Object.assign({}, baseWxappExt, {
+const wxappExt__OEMDEV = merge_1.default({}, baseWxappExt, {
     "extAppid": "wx3e3322226cae5bb7",
     "ext": {
         "wxappAid": 21,
         "wxappId": 101,
-        "wxappDomainUrl": "https://wxapp.dev.faisco.com.cn/"
+        "wxappDomainUrl": "https://wxapp.dev.faisco.com.cn/",
+        "wxappDomain": "https://wxapp.dev.faisco.com.cn/wxAppConnectionV3.jsp"
     }
 });
-/**
- * 线上轻站
- */
-const wxappExt__SVR = Object.assign({}, baseWxappExt, {
+const wxappExt__SVR = merge_1.default({}, baseWxappExt, {
     "extAppid": "wx22c3680805ec5ce3",
     "ext": {
+        "isOem": false,
         "wxappAid": 3039,
         "wxappId": 102,
-        "wxappDomainUrl": "https://wxapp.dev.faisco.com.cn/"
+        "wxappDomainUrl": "https://i.qz.fkw.com/",
+        "wxappDomain": "https://i.qz.fkw.com/wxAppConnectionV3.jsp"
     }
 });
-/**
- * 线上轻应用
- */
-const wxappExt__OEMSVR = Object.assign({}, baseWxappExt, {
+const wxappExt__OEMSVR = merge_1.default({}, baseWxappExt, {
     "extAppid": "wxaa7ea2a6597f6144",
     "ext": {
         "wxappAid": 21,
         "wxappId": 101,
-        "wxappDomainUrl": "https://wxapp.dev.faisco.com.cn/"
+        "wxappDomainUrl": "https://i.qz.fkw.com/",
+        "wxappDomain": "https://i.qz.fkw.com/wxAppConnectionV3.jsp"
     }
 });
-/**
- * wxapp项目路径
- */
 const wxappTargetPath = path_1.default.resolve(__dirname, '../../wxapp');
-/**
- * bdapp项目路径
- */
 const bdappTargetPath = path_1.default.resolve(__dirname, '../../bdapp');
 exports.default = {
     wxappExt__DEV,
@@ -77,3 +66,4 @@ exports.default = {
     wxappTargetPath,
     bdappTargetPath,
 };
+//# sourceMappingURL=config.js.map
