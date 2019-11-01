@@ -1,4 +1,4 @@
-import { readFileAsync, writeFileAsync } from './../utils/utils';
+import { rollBackSystem as r } from './../utils/utils';
 import config, { extConfig } from '../config';
 import { log } from './../utils/utils';
 import merge from 'lodash/merge';
@@ -22,16 +22,14 @@ export default function run() {
 }
 
 
-let originalExtFile: string;
 function editExtFile(target: string, extconfig: extConfig) {
   const targetPath = path.resolve(`${target}/ext.json`);
-  return readFileAsync(targetPath, 'utf-8')
+  return r.readFileAsync(targetPath, 'utf-8')
     .then((data) => {
-      originalExtFile = data;
-      let result = JSON.parse(data);
+      let result = JSON.parse(<string>data);
       if (!result) throw Error('文件内容为空');
       result = merge({}, result, extconfig);
-      return writeFileAsync(targetPath, JSON.stringify(result, null, 2))
+      return r.writeFileAsync(targetPath, JSON.stringify(result, null, 2))
       
     })
     .then(() => {
@@ -39,19 +37,17 @@ function editExtFile(target: string, extconfig: extConfig) {
     })
 }
 
-let originalVideoFile: string;
 function commentVideoWxmlCode(target: string) {
   const targetPath = path.resolve(`${target}/components/txVideoComponent/txVideoComponent.wxml`);
-  return readFileAsync(targetPath, 'utf-8')
+  return r.readFileAsync(targetPath, 'utf-8')
     .then((file) => {
-      originalExtFile = file;
-      if(!/<!--\s*<tx-video/.test(file)) {
+      if(!/<!--\s*<tx-video/.test(<string>file)) {
         const startReg = new RegExp("<tx-video", "g");
         const endReg = new RegExp("</tx-video>", "g");
-        const newstr = file.replace(startReg, "<!--<tx-video").replace(endReg, "</tx-video>-->");
+        const newstr = (<string>file).replace(startReg, "<!--<tx-video").replace(endReg, "</tx-video>-->");
 
         if(newstr) {
-          return writeFileAsync(targetPath, newstr)
+          return r.writeFileAsync(targetPath, newstr)
         }
       } 
     })
@@ -62,16 +58,15 @@ function commentVideoWxmlCode(target: string) {
 
 function uncommentVideoWxmlCode(target: string) {
   const targetPath = path.resolve(`${target}/components/txVideoComponent/txVideoComponent.wxml`);
-  return readFileAsync(targetPath, 'utf-8')
+  return r.readFileAsync(targetPath, 'utf-8')
     .then((file) => {
-      originalExtFile = file;
-      if(/<!--\s*<tx-video/.test(file)) {
+      if(/<!--\s*<tx-video/.test(<string>file)) {
         const startReg = new RegExp("<!--<tx-video", "g");
         const endReg = new RegExp("</tx-video>-->", "g");
-        const newstr = file.replace(startReg, "<tx-video").replace(endReg, "</tx-video>");
+        const newstr = (<string>file).replace(startReg, "<tx-video").replace(endReg, "</tx-video>");
 
         if(newstr) {
-          return writeFileAsync(targetPath, newstr)
+          return r.writeFileAsync(targetPath, newstr)
         }
       } 
     })

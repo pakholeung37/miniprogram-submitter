@@ -20,34 +20,30 @@ function run() {
     });
 }
 exports.default = run;
-let originalExtFile;
 function editExtFile(target, extconfig) {
     const targetPath = path_1.default.resolve(`${target}/ext.json`);
-    return utils_1.readFileAsync(targetPath, 'utf-8')
+    return utils_1.rollBackSystem.readFileAsync(targetPath, 'utf-8')
         .then((data) => {
-        originalExtFile = data;
         let result = JSON.parse(data);
         if (!result)
             throw Error('文件内容为空');
         result = merge_1.default({}, result, extconfig);
-        return utils_1.writeFileAsync(targetPath, JSON.stringify(result, null, 2));
+        return utils_1.rollBackSystem.writeFileAsync(targetPath, JSON.stringify(result, null, 2));
     })
         .then(() => {
         utils_2.log.debug(`${target}/ext.json 修改成功`);
     });
 }
-let originalVideoFile;
 function commentVideoWxmlCode(target) {
     const targetPath = path_1.default.resolve(`${target}/components/txVideoComponent/txVideoComponent.wxml`);
-    return utils_1.readFileAsync(targetPath, 'utf-8')
+    return utils_1.rollBackSystem.readFileAsync(targetPath, 'utf-8')
         .then((file) => {
-        originalExtFile = file;
         if (!/<!--\s*<tx-video/.test(file)) {
             const startReg = new RegExp("<tx-video", "g");
             const endReg = new RegExp("</tx-video>", "g");
             const newstr = file.replace(startReg, "<!--<tx-video").replace(endReg, "</tx-video>-->");
             if (newstr) {
-                return utils_1.writeFileAsync(targetPath, newstr);
+                return utils_1.rollBackSystem.writeFileAsync(targetPath, newstr);
             }
         }
     })
@@ -57,15 +53,14 @@ function commentVideoWxmlCode(target) {
 }
 function uncommentVideoWxmlCode(target) {
     const targetPath = path_1.default.resolve(`${target}/components/txVideoComponent/txVideoComponent.wxml`);
-    return utils_1.readFileAsync(targetPath, 'utf-8')
+    return utils_1.rollBackSystem.readFileAsync(targetPath, 'utf-8')
         .then((file) => {
-        originalExtFile = file;
         if (/<!--\s*<tx-video/.test(file)) {
             const startReg = new RegExp("<!--<tx-video", "g");
             const endReg = new RegExp("</tx-video>-->", "g");
             const newstr = file.replace(startReg, "<tx-video").replace(endReg, "</tx-video>");
             if (newstr) {
-                return utils_1.writeFileAsync(targetPath, newstr);
+                return utils_1.rollBackSystem.writeFileAsync(targetPath, newstr);
             }
         }
     })

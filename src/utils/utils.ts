@@ -54,4 +54,4 @@ class RollBackSystem {
   }
 }
 
-export const singleRollBackSystem = new RollBackSystem();
+export const rollBackSystem = new RollBackSystem();

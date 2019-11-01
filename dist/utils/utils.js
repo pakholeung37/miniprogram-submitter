@@ -54,5 +54,5 @@ class RollBackSystem {
         return Promise.all(functionArray);
     }
 }
-exports.singleRollBackSystem = new RollBackSystem();
+exports.rollBackSystem = new RollBackSystem();
 //# sourceMappingURL=utils.js.map
