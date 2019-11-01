@@ -1,0 +1,24 @@
+{
+  "name": "miniprogram-submitter",
+  "version": "0.0.1",
+  "description": "faisco miniprogram submitter",
+  "main": "./dist/index.js",
+  "author": "pakholeung37@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^3.0.2"
+  },
+  "scripts": {
+    "complie": "yarn run tsc",
+    "complie --watch": "yarn run tsc --watch",
+    "start": "node ./dist/index.js",
+    "lint": "yarn run eslint -c .eslintrc.json ./src/**"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.3",
+    "@typescript-eslint/eslint-plugin": "^2.6.0",
+    "@typescript-eslint/parser": "^2.6.0",
+    "eslint": "^6.6.0",
+    "typescript": "^3.6.4"
+  }
+}
