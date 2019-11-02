@@ -51,11 +51,11 @@ function run(command) {
             });
             utils_2.log.error('stage 1 失败, 即将回滚');
             utils_1.rollBackSystem.rollback()
-                .then(() => utils_2.log.debug('回滚成功'))
+                .then(() => utils_2.log.info('回滚成功'))
                 .catch((err) => utils_2.log.error(err, '回滚失败'));
         }
         else {
-            utils_2.log.debug('stage 1 成功');
+            utils_2.log.info('stage 1 成功');
         }
     });
 }
@@ -71,7 +71,7 @@ function editExtFile(target, extconfig) {
         return utils_1.rollBackSystem.writeFileAsync(targetPath, JSON.stringify(result, null, 2));
     })
         .then(() => {
-        utils_2.log.debug(`${targetPath} 修改成功`);
+        utils_2.log.info(`${targetPath} 修改成功`);
     });
 }
 function commentVideoWxmlCode(target) {
@@ -83,16 +83,15 @@ function commentVideoWxmlCode(target) {
             const endTag = new RegExp("</tx-video>", "g");
             const newstr = file.replace(startTag, "<!--<tx-video").replace(endTag, "</tx-video>-->");
             if (newstr) {
-                return utils_1.rollBackSystem.writeFileAsync(targetPath, newstr);
+                return utils_1.rollBackSystem.writeFileAsync(targetPath, newstr)
+                    .then(() => utils_2.log.info(`${targetPath} 注释成功`));
             }
-            else {
-                utils_2.log.warn('没找到标签<tx-video>');
-                return;
-            }
+            return;
         }
-    })
-        .then(() => {
-        utils_2.log.debug(`${targetPath} 注释成功`);
+        else {
+            utils_2.log.warn(`${targetPath} 标签<tx-video>已注释`);
+            return;
+        }
     });
 }
 function uncommentVideoWxmlCode(target) {
@@ -104,16 +103,17 @@ function uncommentVideoWxmlCode(target) {
             const endTag = new RegExp("</tx-video>-->", "g");
             const newstr = file.replace(startTag, "<tx-video").replace(endTag, "</tx-video>");
             if (newstr) {
-                return utils_1.rollBackSystem.writeFileAsync(targetPath, newstr);
+                return utils_1.rollBackSystem.writeFileAsync(targetPath, newstr)
+                    .then(() => {
+                    utils_2.log.info(`${targetPath} 取消注释成功`);
+                });
             }
-            else {
-                utils_2.log.warn('没找到标签<tx-video>');
-                return;
-            }
+            return;
         }
-    })
-        .then(() => {
-        utils_2.log.debug(`${targetPath} 取消注释成功`);
+        else {
+            utils_2.log.warn(`${targetPath} 没找到注释标签<tx-video>`);
+            return;
+        }
     });
 }
 function addTxVideoComponentJsonTxKey(target) {
@@ -180,13 +180,13 @@ function TxKeyToggleFactory(command, filePath) {
         return utils_1.rollBackSystem.writeFileAsync(targetPath, JSON.stringify(data, null, 2))
             .then(() => {
             if (command === 'app --add')
-                utils_2.log.debug(`${targetPath} 新增属性plugins.txvideo成功`);
+                utils_2.log.info(`${targetPath} 新增属性plugins.txvideo成功`);
             else if (command === 'app --delete')
-                utils_2.log.debug(`${targetPath} 删除属性plugins.txvideo成功`);
+                utils_2.log.info(`${targetPath} 删除属性plugins.txvideo成功`);
             else if (command === 'video --add')
-                utils_2.log.debug(`${targetPath} 新增属性usingComponents.tx-video成功`);
+                utils_2.log.info(`${targetPath} 新增属性usingComponents.tx-video成功`);
             else if (command === 'video --delete')
-                utils_2.log.debug(`${targetPath} 删除属性usingComponents.tx-video成功`);
+                utils_2.log.info(`${targetPath} 删除属性usingComponents.tx-video成功`);
         });
     });
 }

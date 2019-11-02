@@ -9,13 +9,14 @@
  * 
  * 
  */
+import { log } from './utils/utils';
 import commander from 'commander';
 import run from './wxapp';
-
 commander
   .version('0.0.1')
   .option('-c, --config <path>', 'custom config file')
   .option('-s, --silent', 'silent log')
   .parse(process.argv);
 
+if(commander.slient) log.silent();
 run();

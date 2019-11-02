@@ -3,24 +3,36 @@ import fs from 'fs';
 import chalk from 'chalk';
 import Promise from 'q';
 
-export const log = {
-  _silent: false,
+enum Level {
+  'DEBUG',
+  'INFO',
+  'WARN',
+  'ERROR',
+}
+class Log {
+  _silent = false;
+  _level: Level = Level.INFO;
   debug(...args: any) {
-    if(this._silent) return;
+    if(this._silent && this._level <= Level.DEBUG) return;
     console.log(chalk.green(...args));
-  },
+  }
+  info(...args: any) {
+    if(this._silent && this._level <= Level.INFO) return;
+  }
   warn(...args: any) {
-    if(this._silent) return;
+    if(this._silent && this._level <= Level.WARN) return;
     console.log(chalk.yellow(...args))
-  },
+  }
   error(...args: any) {
-    if(this._silent) return;
+    if(this._silent && this._level <= Level.ERROR) return;
     console.error(chalk.red(...args));
-  },
+  }
   silent(value: boolean = true) {
     this._silent = value;
   }
 }
+
+export const log = new Log();
 
 const _readFileAsync = promisify(fs.readFile);
 const _writeFileAsync = promisify(fs.writeFile);

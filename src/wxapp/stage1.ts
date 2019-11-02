@@ -62,10 +62,10 @@ export default function run(command: RunCommand) {
           });
           log.error('stage 1 失败, 即将回滚');
           r.rollback()
-            .then(() => log.debug('回滚成功'))
+            .then(() => log.info('回滚成功'))
             .catch((err) => log.error(err, '回滚失败'));
         } else {
-          log.debug('stage 1 成功');
+          log.info('stage 1 成功');
         }
     })
 }
@@ -87,7 +87,7 @@ function editExtFile(target: string, extconfig: extConfig) {
       return r.writeFileAsync(targetPath, JSON.stringify(result, null, 2))
     })
     .then(() => {
-      log.debug(`${targetPath} 修改成功`);
+      log.info(`${targetPath} 修改成功`);
     })
 }
 
@@ -108,15 +108,14 @@ function commentVideoWxmlCode(target: string) {
 
         if(newstr) {
           return r.writeFileAsync(targetPath, newstr)
-        } else {
-          log.warn('没找到标签<tx-video>')
-          return;
+            .then(() => log.info(`${targetPath} 注释成功`))
         }
+        return;
+      } else {
+        log.warn(`${targetPath} 标签<tx-video>已注释`)
+        return;
       }
-    })
-    .then(() => {
-      log.debug(`${targetPath} 注释成功`);
-    })
+    });
 }
 
 /**
@@ -136,15 +135,17 @@ function uncommentVideoWxmlCode(target: string) {
 
         if(newstr) {
           return r.writeFileAsync(targetPath, newstr)
-        } else {
-          log.warn('没找到标签<tx-video>')
-          return;
+            .then(() => {
+              log.info(`${targetPath} 取消注释成功`);
+            })
         }
-      } 
+        return;
+      } else {
+        log.warn(`${targetPath} 没找到注释标签<tx-video>`)
+        return;
+      }
     })
-    .then(() => {
-      log.debug(`${targetPath} 取消注释成功`);
-    })
+    
 }
 
 /**
@@ -265,10 +266,10 @@ function TxKeyToggleFactory(command: ToggleFactoryCommand, filePath: string) {
       }
       return r.writeFileAsync(targetPath, JSON.stringify(data, null, 2))
         .then(() => {
-          if(command === 'app --add') log.debug(`${targetPath} 新增属性plugins.txvideo成功`);
-          else if(command === 'app --delete') log.debug(`${targetPath} 删除属性plugins.txvideo成功`);
-          else if(command === 'video --add') log.debug(`${targetPath} 新增属性usingComponents.tx-video成功`);
-          else if(command === 'video --delete') log.debug(`${targetPath} 删除属性usingComponents.tx-video成功`);
+          if(command === 'app --add') log.info(`${targetPath} 新增属性plugins.txvideo成功`);
+          else if(command === 'app --delete') log.info(`${targetPath} 删除属性plugins.txvideo成功`);
+          else if(command === 'video --add') log.info(`${targetPath} 新增属性usingComponents.tx-video成功`);
+          else if(command === 'video --delete') log.info(`${targetPath} 删除属性usingComponents.tx-video成功`);
         })
     })
 }

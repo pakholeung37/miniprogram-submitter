@@ -1,4 +1,4 @@
 import stage1 from './stage1';
 export default function run () {
-  stage1('oem');
+  stage1('oem-plugin');
 }
