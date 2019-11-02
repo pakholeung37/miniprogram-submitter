@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const util_1 = require("util");
 const fs_1 = __importDefault(require("fs"));
 const chalk_1 = __importDefault(require("chalk"));
+const q_1 = __importDefault(require("q"));
 exports.log = {
     _silent: false,
     debug(...args) {
@@ -51,7 +52,7 @@ class RollBackSystem {
                 functionArray.push(_writeFileAsync(file.path, file.orginalData));
             }
         });
-        return Promise.all(functionArray);
+        return q_1.default.all(functionArray);
     }
 }
 exports.rollBackSystem = new RollBackSystem();

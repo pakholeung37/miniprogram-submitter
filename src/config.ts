@@ -85,4 +85,8 @@ export default {
   wxappExt__OEMSVR,
   wxappTargetPath,
   bdappTargetPath,
+  commonVideoPlugin: {
+    "version": "1.2.2",
+    "provider": "wxa75efa648b60994b"
+  }
 }

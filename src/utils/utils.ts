@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import fs from 'fs';
 import chalk from 'chalk';
+import Promise from 'q';
 
 export const log = {
   _silent: false,
