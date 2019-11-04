@@ -1,5 +1,5 @@
 import { rollBackSystem as r } from './../utils/utils';
-import config, { extConfig } from '../config';
+import config, { ExtConfig, ProjectConfig } from '../config';
 import { log } from './../utils/utils';
 import merge from 'lodash/merge';
 import path from 'path';
@@ -8,8 +8,8 @@ import Promise from 'q';
 type RunCommand = 
   'dev' |
   'dev-plugin' |
-  'oem' |
-  'oem-plugin';
+  'oem-dev' |
+  'oem-dev-plugin';
 /**
  * stage1
  * 
@@ -19,16 +19,30 @@ export default function run(command: RunCommand) {
   const target = config.wxappTargetPath;
   
 
-  let promiseArray;
+  let promiseArray: any[] = [];
   switch (command) {
     case 'dev':
-    case 'oem':
+    case 'dev-plugin':
       promiseArray = [
-        editExtFile(
-          target, 
-          command === 'dev' 
-            ? config.wxappExt__DEV 
-            : config.wxappExt__OEMDEV),
+        editExtFile(target, config.wxappExt__DEV),
+        editProjectConfigFile(target, config.projectConfig__DEV)
+      ]
+      break;
+    case 'oem-dev':
+    case 'oem-dev-plugin':
+      promiseArray = [
+        editExtFile(target, config.wxappExt__OEMDEV),
+        editProjectConfigFile(target, config.projectConfig__OEMDEV)
+      ]
+      break;
+    default:
+      break;
+  }
+  switch (command) {
+    case 'dev':
+    case 'oem-dev':
+      promiseArray = [
+        ...promiseArray,
         commentVideoWxmlCode(target),
         delTxVideoComponentJsonTxKey(target),
         delVideoJsonTxKey(target),
@@ -36,13 +50,9 @@ export default function run(command: RunCommand) {
       ]
       break;
     case 'dev-plugin':
-    case 'oem-plugin':
+    case 'oem-dev-plugin':
       promiseArray = [
-        editExtFile(
-          target, 
-          command === 'dev-plugin'
-          ? config.wxappExt__DEV 
-          : config.wxappExt__OEMDEV),
+        ...promiseArray,
         uncommentVideoWxmlCode(target),
         addTxVideoComponentJsonTxKey(target),
         addVideoJsonTxKey(target),
@@ -71,24 +81,27 @@ export default function run(command: RunCommand) {
 }
 
 /**
- * 修改Ext.json
+ * 修改Ext.json文件
  *
  * @param {string} target wxapp项目所在根目录
- * @param {extConfig} extconfig ext.json兼容json设置
+ * @param {extConfig} extConfig ext.json兼容json设置
  * @returns 返回Promise
  */
-function editExtFile(target: string, extconfig: extConfig) {
+function editExtFile(target: string, extConfig: ExtConfig) {
   const targetPath = path.resolve(`${target}/ext.json`);
-  return r.readFileAsync(targetPath, 'utf-8')
-    .then((data) => {
-      let result = JSON.parse(<string>data);
-      if (!result) throw Error('文件内容为空');
-      result = merge({}, result, extconfig);
-      return r.writeFileAsync(targetPath, JSON.stringify(result, null, 2))
-    })
-    .then(() => {
-      log.info(`${targetPath} 修改成功`);
-    })
+  return mergeFile(targetPath, extConfig);
+}
+
+/**
+ * 修改project.config.json文件
+ *
+ * @param {string} target
+ * @param {ProjectConfig} projectConfig
+ * @returns
+ */
+function editProjectConfigFile(target: string, projectConfig: ProjectConfig) {
+  const targetPath = path.resolve(`${target}/project.config.json`);
+  return mergeFile(targetPath, projectConfig);
 }
 
 /**
@@ -101,10 +114,10 @@ function commentVideoWxmlCode(target: string) {
   const targetPath = path.resolve(`${target}/components/txVideoComponent/txVideoComponent.wxml`);
   return r.readFileAsync(targetPath, 'utf-8')
     .then((file) => {
-      if(!/<!--\s*<tx-video/.test(<string>file)) {
+      if(!/<!--\s*<tx-video/.test(file as string)) {
         const startTag = new RegExp("<tx-video", "g");
         const endTag = new RegExp("</tx-video>", "g");
-        const newstr = (<string>file).replace(startTag, "<!--<tx-video").replace(endTag, "</tx-video>-->");
+        const newstr = (file as string).replace(startTag, "<!--<tx-video").replace(endTag, "</tx-video as string>-->");
 
         if(newstr) {
           return r.writeFileAsync(targetPath, newstr)
@@ -128,10 +141,10 @@ function uncommentVideoWxmlCode(target: string) {
   const targetPath = path.resolve(`${target}/components/txVideoComponent/txVideoComponent.wxml`);
   return r.readFileAsync(targetPath, 'utf-8')
     .then((file) => {
-      if(/<!--\s*<tx-video/.test(<string>file)) {
+      if(/<!--\s*<tx-video/.test(file as string)) {
         const startTag = new RegExp("<!--<tx-video", "g");
         const endTag = new RegExp("</tx-video>-->", "g");
-        const newstr = (<string>file).replace(startTag, "<tx-video").replace(endTag, "</tx-video>");
+        const newstr = (file as string).replace(startTag, "<tx-video").replace(endTag, "</tx-video>");
 
         if(newstr) {
           return r.writeFileAsync(targetPath, newstr)
@@ -214,6 +227,26 @@ function delAppTxVideoPlugin(target: string) {
   return TxKeyToggleFactory('app --delete', targetPath);
 }
 
+/**
+ * 读取文件并合并新内容到文件中, 限json文件
+ *
+ * @param {string} targetPath
+ * @param {Object} mergeConfig
+ * @returns
+ */
+function mergeFile(targetPath: string, mergeConfig: Object) {
+  return r.readFileAsync(targetPath, 'utf-8')
+    .then((data) => {
+      let result = JSON.parse(data as string);
+      if (!result) throw Error(`${targetPath}文件内容为空`);
+      result = merge({}, result, mergeConfig);
+      return r.writeFileAsync(targetPath, JSON.stringify(result, null, 2))
+    })
+    .then(() => {
+      log.info(`${targetPath} 修改成功`);
+    })
+}
+
 type ToggleFactoryCommand = 
   'app --add' |
   'app --delete' |
@@ -231,7 +264,7 @@ function TxKeyToggleFactory(command: ToggleFactoryCommand, filePath: string) {
   const targetPath = filePath;
   return r.readFileAsync(targetPath, 'utf-8')
     .then(result => {
-      const data = JSON.parse(<string>result);
+      const data = JSON.parse(result as string);
       if(!data) throw Error('文件内容为空');
       
       if (command === 'video --add') {

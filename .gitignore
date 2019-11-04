@@ -1,2 +1,5 @@
 node_modules
 .vscode
+src/config.ts
+dist/config.js
+dist/config.js.map

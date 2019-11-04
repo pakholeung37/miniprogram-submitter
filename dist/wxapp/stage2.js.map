@@ -1,1 +1,1 @@
-{"version":3,"file":"stage2.js","sourceRoot":"","sources":["../../src/wxapp/stage2.ts"],"names":[],"mappings":";;AAKA,SAAwB,GAAG;AAE3B,CAAC;AAFD,sBAEC"}
+{"version":3,"file":"stage2.js","sourceRoot":"","sources":["../../src/wxapp/stage2.ts"],"names":[],"mappings":";;AAAA,0CAA2D;AAO3D,SAAwB,GAAG;IACzB,OAAO,4BAAoB,EAAE;SAC1B,IAAI,CAAC,IAAI,CAAC,EAAE;QACX,WAAG,CAAC,IAAI,CAAC,IAAI,CAAC,CAAC;IACjB,CAAC,CAAC,CAAA;AACN,CAAC;AALD,sBAKC"}

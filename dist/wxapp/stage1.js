@@ -11,14 +11,30 @@ const path_1 = __importDefault(require("path"));
 const q_1 = __importDefault(require("q"));
 function run(command) {
     const target = config_1.default.wxappTargetPath;
-    let promiseArray;
+    let promiseArray = [];
     switch (command) {
         case 'dev':
-        case 'oem':
+        case 'dev-plugin':
             promiseArray = [
-                editExtFile(target, command === 'dev'
-                    ? config_1.default.wxappExt__DEV
-                    : config_1.default.wxappExt__OEMDEV),
+                editExtFile(target, config_1.default.wxappExt__DEV),
+                editProjectConfigFile(target, config_1.default.projectConfig__DEV)
+            ];
+            break;
+        case 'oem-dev':
+        case 'oem-dev-plugin':
+            promiseArray = [
+                editExtFile(target, config_1.default.wxappExt__OEMDEV),
+                editProjectConfigFile(target, config_1.default.projectConfig__OEMDEV)
+            ];
+            break;
+        default:
+            break;
+    }
+    switch (command) {
+        case 'dev':
+        case 'oem-dev':
+            promiseArray = [
+                ...promiseArray,
                 commentVideoWxmlCode(target),
                 delTxVideoComponentJsonTxKey(target),
                 delVideoJsonTxKey(target),
@@ -26,11 +42,9 @@ function run(command) {
             ];
             break;
         case 'dev-plugin':
-        case 'oem-plugin':
+        case 'oem-dev-plugin':
             promiseArray = [
-                editExtFile(target, command === 'dev-plugin'
-                    ? config_1.default.wxappExt__DEV
-                    : config_1.default.wxappExt__OEMDEV),
+                ...promiseArray,
                 uncommentVideoWxmlCode(target),
                 addTxVideoComponentJsonTxKey(target),
                 addVideoJsonTxKey(target),
@@ -60,19 +74,13 @@ function run(command) {
     });
 }
 exports.default = run;
-function editExtFile(target, extconfig) {
+function editExtFile(target, extConfig) {
     const targetPath = path_1.default.resolve(`${target}/ext.json`);
-    return utils_1.rollBackSystem.readFileAsync(targetPath, 'utf-8')
-        .then((data) => {
-        let result = JSON.parse(data);
-        if (!result)
-            throw Error('文件内容为空');
-        result = merge_1.default({}, result, extconfig);
-        return utils_1.rollBackSystem.writeFileAsync(targetPath, JSON.stringify(result, null, 2));
-    })
-        .then(() => {
-        utils_2.log.info(`${targetPath} 修改成功`);
-    });
+    return mergeFile(targetPath, extConfig);
+}
+function editProjectConfigFile(target, projectConfig) {
+    const targetPath = path_1.default.resolve(`${target}/project.config.json`);
+    return mergeFile(targetPath, projectConfig);
 }
 function commentVideoWxmlCode(target) {
     const targetPath = path_1.default.resolve(`${target}/components/txVideoComponent/txVideoComponent.wxml`);
@@ -81,7 +89,7 @@ function commentVideoWxmlCode(target) {
         if (!/<!--\s*<tx-video/.test(file)) {
             const startTag = new RegExp("<tx-video", "g");
             const endTag = new RegExp("</tx-video>", "g");
-            const newstr = file.replace(startTag, "<!--<tx-video").replace(endTag, "</tx-video>-->");
+            const newstr = file.replace(startTag, "<!--<tx-video").replace(endTag, "</tx-video as string>-->");
             if (newstr) {
                 return utils_1.rollBackSystem.writeFileAsync(targetPath, newstr)
                     .then(() => utils_2.log.info(`${targetPath} 注释成功`));
@@ -139,6 +147,19 @@ function addAppTxVideoPlugin(target) {
 function delAppTxVideoPlugin(target) {
     const targetPath = path_1.default.resolve(`${target}/app.json`);
     return TxKeyToggleFactory('app --delete', targetPath);
+}
+function mergeFile(targetPath, mergeConfig) {
+    return utils_1.rollBackSystem.readFileAsync(targetPath, 'utf-8')
+        .then((data) => {
+        let result = JSON.parse(data);
+        if (!result)
+            throw Error(`${targetPath}文件内容为空`);
+        result = merge_1.default({}, result, mergeConfig);
+        return utils_1.rollBackSystem.writeFileAsync(targetPath, JSON.stringify(result, null, 2));
+    })
+        .then(() => {
+        utils_2.log.info(`${targetPath} 修改成功`);
+    });
 }
 function TxKeyToggleFactory(command, filePath) {
     const targetPath = filePath;

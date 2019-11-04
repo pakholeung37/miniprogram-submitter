@@ -7,6 +7,7 @@ const util_1 = require("util");
 const fs_1 = __importDefault(require("fs"));
 const chalk_1 = __importDefault(require("chalk"));
 const q_1 = __importDefault(require("q"));
+const expand_tilde_1 = __importDefault(require("expand-tilde"));
 var Level;
 (function (Level) {
     Level[Level["DEBUG"] = 0] = "DEBUG";
@@ -27,6 +28,7 @@ class Log {
     info(...args) {
         if (this._silent && this._level <= Level.INFO)
             return;
+        console.log(...args);
     }
     warn(...args) {
         if (this._silent && this._level <= Level.WARN)
@@ -71,4 +73,21 @@ class RollBackSystem {
     }
 }
 exports.rollBackSystem = new RollBackSystem();
+function isWin() {
+    return /^win/.test(process.platform);
+}
+exports.isWin = isWin;
+function getWxUploadPortAsync() {
+    const wxPortFilePath = isWin()
+        ? expand_tilde_1.default('~/AppData/Local/微信开发者工具/User Data/Default/.ide')
+        : expand_tilde_1.default('~/Library/Application Support/微信开发者工具/Default/.ide');
+    return _readFileAsync(wxPortFilePath, 'utf-8')
+        .then(result => {
+        const port = ~~result;
+        if (!port)
+            throw Error('端口不存在, 请检查是否打开微信开发者工具服务端口开关');
+        return port;
+    });
+}
+exports.getWxUploadPortAsync = getWxUploadPortAsync;
 //# sourceMappingURL=utils.js.map

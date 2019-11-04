@@ -2,6 +2,8 @@ import { promisify } from 'util';
 import fs from 'fs';
 import chalk from 'chalk';
 import Promise from 'q';
+import path from 'path';
+import expandTilde from 'expand-tilde';
 
 enum Level {
   'DEBUG',
@@ -18,6 +20,7 @@ class Log {
   }
   info(...args: any) {
     if(this._silent && this._level <= Level.INFO) return;
+    console.log(...args);
   }
   warn(...args: any) {
     if(this._silent && this._level <= Level.WARN) return;
@@ -68,3 +71,18 @@ class RollBackSystem {
 }
 
 export const rollBackSystem = new RollBackSystem();
+
+export function isWin() {
+  return /^win/.test(process.platform);
+}
+export function getWxUploadPortAsync() {
+  const wxPortFilePath = isWin() 
+    ? expandTilde('~/AppData/Local/微信开发者工具/User Data/Default/.ide')
+    : expandTilde('~/Library/Application Support/微信开发者工具/Default/.ide');
+  return _readFileAsync(wxPortFilePath, 'utf-8')
+    .then(result => {
+      const port = ~~result;
+      if(!port) throw Error('端口不存在, 请检查是否打开微信开发者工具服务端口开关');
+      return port;
+    })
+}
