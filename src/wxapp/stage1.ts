@@ -4,16 +4,13 @@ import { log } from './../utils/utils';
 import merge from 'lodash/merge';
 import path from 'path';
 import Promise from 'q';
+import { RunCommand } from './index';
 
-type RunCommand = 
-  'dev' |
-  'dev-plugin' |
-  'oem-dev' |
-  'oem-dev-plugin';
 /**
  * stage1
  * 
  * @description 阶段1 进行文件预处理, 包括处理脚本的Aid, DomainUrl以及添加视频plugin等
+ * @param {RunCommand} command
  */
 export default function run(command: RunCommand) {
   const target = config.wxappTargetPath;

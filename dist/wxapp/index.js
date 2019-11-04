@@ -12,9 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const stage1_1 = __importDefault(require("./stage1"));
 const stage2_1 = __importDefault(require("./stage2"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
+        yield stage1_1.default('dev-plugin');
         yield stage2_1.default();
     });
 }
