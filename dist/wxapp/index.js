@@ -14,10 +14,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const stage1_1 = __importDefault(require("./stage1"));
 const stage2_1 = __importDefault(require("./stage2"));
+const utils_1 = require("../utils/utils");
+const command = [
+    'dev',
+    'dev-plugin',
+    'oem-dev',
+    'oem-dev-plugin',
+    'svr',
+    'svr-plugin',
+    'oem-svr',
+    'oem-svr-plugin'
+];
+function validRunCommand(s) {
+    return command.some(_ => _ === s);
+}
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield stage1_1.default('dev-plugin');
-        yield stage2_1.default();
+        const target = utils_1.cli.target;
+        if (!validRunCommand(target)) {
+            console.log('参数错误', target);
+            return;
+        }
+        yield stage1_1.default(target);
+        yield stage2_1.default(target);
     });
 }
 exports.default = run;

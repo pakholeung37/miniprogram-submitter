@@ -2,8 +2,11 @@ import { promisify } from 'util';
 import fs from 'fs';
 import chalk from 'chalk';
 import Promise from 'q';
-import path from 'path';
 import expandTilde from 'expand-tilde';
+
+import c from 'commander';
+
+export const cli = new c.Command();
 
 enum Level {
   'DEBUG',

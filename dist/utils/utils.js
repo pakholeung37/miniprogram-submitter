@@ -8,6 +8,8 @@ const fs_1 = __importDefault(require("fs"));
 const chalk_1 = __importDefault(require("chalk"));
 const q_1 = __importDefault(require("q"));
 const expand_tilde_1 = __importDefault(require("expand-tilde"));
+const commander_1 = __importDefault(require("commander"));
+exports.cli = new commander_1.default.Command();
 var Level;
 (function (Level) {
     Level[Level["DEBUG"] = 0] = "DEBUG";

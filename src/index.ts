@@ -9,14 +9,36 @@
  * 
  * 
  */
-import { log } from './utils/utils';
-import commander from 'commander';
+import { log, cli } from './utils/utils';
 import run from './wxapp';
-commander
+
+cli
   .version('0.0.1')
   .option('-c, --config <path>', 'custom config file')
   .option('-s, --silent', 'silent log')
+  .option('-u, --upload', 'upload flag')
+  .option('-t, --target <name>', 
+  `avaliable target name:
+  wxapp-dev
+  wxapp-dev-plugin
+  wxapp-oem-dev
+  wxapp-oem-dev-plugin
+  wxapp-svr
+  wxapp-svr-plugin
+  wxapp-oem-svr
+  wxapp-oem-svr-plugin
+  
+  bdapp-dev
+  bdapp-dev-run
+  bdapp-oem
+  bdapp-oem-run
+  bdapp-svr
+  bdapp-svr-run
+  bdapp-oem-svr
+  bdapp-oem-svr-run`)
   .parse(process.argv);
 
-if(commander.slient) log.silent();
+if(cli.slient) log.silent();
+
+console.log(cli.target);
 run();
