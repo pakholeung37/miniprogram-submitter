@@ -6,7 +6,7 @@
   "author": "pakholeung37@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "commander": "^3.0.2",
     "expand-tilde": "^2.0.2",
     "lodash": "^4.17.15",
